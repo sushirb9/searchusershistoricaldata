@@ -1,134 +1,177 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Search User</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f6fc; /* solid background */
-            color: #333;
-            padding: 40px;
-            text-align: center;
-        }
-
-        h2 {
-            color: #2c3e50;
-        }
-
-        input[type="text"] {
-            padding: 10px;
-            width: 300px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        button {
-            padding: 10px 20px;
-            margin: 10px 5px;
-            font-size: 16px;
-            border: none;
-            border-radius: 4px;
-            color: white;
-            cursor: pointer;
-            background-color: #3498db;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #2980b9;
-        }
-
-        #result {
-            margin-top: 30px;
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 20px;
-            width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            text-align: left;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 12px;
-            border: 2px solid #2c3e50;
-            text-align: left;
-        }
-
-        th {
-            background-color: #3498db;
-            color: white;
-            width: 30%;
-        }
-
-        td {
-            background-color: #ecf0f1;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>User Search</title>
+<style>
+  /* Reset */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #ffffff;
+    margin: 0;
+    padding: 40px 20px;
+    color: #333;
+    text-align: center;
+  }
+  .logo {
+    max-width: 200px;
+    margin: 0 auto 20px auto;
+  }
+  h2 {
+    font-weight: 600;
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    color: #004a9f; /* Kmart blue */
+  }
+  .search-container {
+    max-width: 420px;
+    margin: 0 auto 40px auto;
+    display: flex;
+    gap: 10px;
+  }
+  input[type="text"] {
+    flex-grow: 1;
+    padding: 14px 16px;
+    font-size: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    transition: border-color 0.3s ease;
+  }
+  input[type="text"]:focus {
+    outline: none;
+    border-color: #004a9f;
+    box-shadow: 0 0 5px #80b3ff;
+  }
+  button {
+    background-color: #004a9f;
+    border: none;
+    color: white;
+    padding: 14px 20px;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    flex-shrink: 0;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+  }
+  button:hover {
+    background-color: #003272;
+  }
+  #result {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #f7f9fc;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 25px 30px;
+    font-size: 1rem;
+    color: #1a1a1a;
+    text-align: left;
+  }
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 15px;
+  }
+  th {
+    font-weight: 600;
+    color: #004a9f;
+    width: 35%;
+    vertical-align: top;
+  }
+  td {
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding-left: 20px;
+  }
+  /* Error/Message */
+  #result span {
+    display: block;
+    text-align: center;
+    font-weight: 600;
+    color: #d63636;
+    font-size: 1.1rem;
+    padding: 20px 0;
+  }
+</style>
 </head>
 <body>
 
-    <h2>Search User by Email Address or Phone</h2>
+<!-- Kmart Australia Logo SVG -->
+<div class="logo">
+  <svg width="200" height="48" viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Kmart Australia logo" role="img">
+    <rect width="200" height="48" fill="#004a9f"/>
+    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="32" fill="white" letter-spacing="3">
+      KMART
+    </text>
+  </svg>
+</div>
 
-    <input type="text" id="searchValue" placeholder="Enter Email or Phone">
-    <br><br>
-    <button onclick="search('email')">Search by Email</button>
-    <button onclick="search('phone')">Search by Phone</button>
+<h2>Search User by Email or Phone</h2>
 
-    <div id="result"></div>
+<div class="search-container">
+  <input type="text" id="searchValue" placeholder="Enter Email or Phone" />
+  <button onclick="search('email')">Search by Email</button>
+  <button onclick="search('phone')">Search by Phone</button>
+</div>
 
-    <script>
-        const apiUrl = 'https://jlquaspst9.execute-api.ap-southeast-2.amazonaws.com/Dev/search';
+<div id="result"></div>
 
-        function search(type) {
-            const value = document.getElementById('searchValue').value.trim();
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = '';
+<script>
+  const apiUrl = 'https://jlquaspst9.execute-api.ap-southeast-2.amazonaws.com/Dev/search';
 
-            if (!value) {
-                resultDiv.innerHTML = "<span style='color:red;'>Please enter a value.</span>";
-                return;
-            }
+  function search(type) {
+    const value = document.getElementById('searchValue').value.trim();
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = '';
 
-            fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type, value })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    const user = data.data;
-                    resultDiv.innerHTML = `
-                        <table>
-                            <tr><th>First Name</th><td>${user.firstName || '-'}</td></tr>
-                            <tr><th>Last Name</th><td>${user.lastName || '-'}</td></tr>
-                            <tr><th>Email</th><td>${user.email}</td></tr>
-                            <tr><th>Phone</th><td>${user.phone}</td></tr>
-                            <tr><th>Incident ID</th><td>${user.incidentId || '-'}</td></tr>
-                            <tr><th>Subject</th><td>${user.subject || '-'}</td></tr>
-                            <tr><th>Reference ID</th><td>${user.referenceId || '-'}</td></tr>
-                            <tr><th>Status</th><td>${user.status || '-'}</td></tr>
-                            <tr><th>Reason</th><td>${user.reason || '-'}</td></tr>
-                            <tr><th>Category</th><td>${user.category || '-'}</td></tr>
-                        </table>
-                    `;
-                } else {
-                    resultDiv.innerHTML = "<span style='color:red;'>User not found.</span>";
-                }
-            })
-            .catch(error => {
-                resultDiv.innerHTML = "<span style='color:red;'>Error contacting the server.</span>";
-                console.error('API error:', error);
-            });
-        }
-    </script>
+    if (!value) {
+      resultDiv.innerHTML = "<span>Please enter a value.</span>";
+      return;
+    }
+
+    fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, value })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'success') {
+        const user = data.data;
+        resultDiv.innerHTML = `
+          <table>
+            <tr><th>First Name</th><td>${user.firstName || '-'}</td></tr>
+            <tr><th>Last Name</th><td>${user.lastName || '-'}</td></tr>
+            <tr><th>Email</th><td>${user.email}</td></tr>
+            <tr><th>Phone</th><td>${user.phone}</td></tr>
+            <tr><th>Incident ID</th><td>${user.incidentId || '-'}</td></tr>
+            <tr><th>Subject</th><td>${user.subject || '-'}</td></tr>
+            <tr><th>Reference ID</th><td>${user.referenceId || '-'}</td></tr>
+            <tr><th>Status</th><td>${user.status || '-'}</td></tr>
+            <tr><th>Reason</th><td>${user.reason || '-'}</td></tr>
+            <tr><th>Category</th><td>${user.category || '-'}</td></tr>
+          </table>
+        `;
+      } else {
+        resultDiv.innerHTML = "<span>User not found.</span>";
+      }
+    })
+    .catch(error => {
+      resultDiv.innerHTML = "<span>Error contacting the server.</span>";
+      console.error('API error:', error);
+    });
+  }
+</script>
+
 </body>
 </html>
