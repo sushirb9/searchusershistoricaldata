@@ -5,7 +5,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f2f6fc; /* solid light blue background */
+            background-color: #f2f6fc; /* solid background */
             color: #333;
             padding: 40px;
             text-align: center;
@@ -48,32 +48,28 @@
             margin-left: auto;
             margin-right: auto;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: left;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
 
         th, td {
-            padding: 10px;
+            padding: 12px;
+            border: 2px solid #2c3e50;
             text-align: left;
         }
 
         th {
-            background-color: #f0f0f0;
-            color: #333;
-            border-bottom: 1px solid #ddd;
+            background-color: #3498db;
+            color: white;
+            width: 30%;
         }
 
         td {
-            border-bottom: 1px solid #eee;
-        }
-
-        .not-found {
-            color: red;
-            font-weight: bold;
+            background-color: #ecf0f1;
         }
     </style>
 </head>
@@ -94,11 +90,10 @@
         function search(type) {
             const value = document.getElementById('searchValue').value.trim();
             const resultDiv = document.getElementById('result');
-
-            resultDiv.innerHTML = ''; // clear previous
+            resultDiv.innerHTML = '';
 
             if (!value) {
-                resultDiv.innerHTML = "<div class='not-found'>Please enter a value.</div>";
+                resultDiv.innerHTML = "<span style='color:red;'>Please enter a value.</span>";
                 return;
             }
 
@@ -113,25 +108,24 @@
                     const user = data.data;
                     resultDiv.innerHTML = `
                         <table>
-                            <tr><th>Field</th><th>Value</th></tr>
-                            <tr><td>First Name</td><td>${user.firstName || '-'}</td></tr>
-                            <tr><td>Last Name</td><td>${user.lastName || '-'}</td></tr>
-                            <tr><td>Email</td><td>${user.email}</td></tr>
-                            <tr><td>Phone</td><td>${user.phone}</td></tr>
-                            <tr><td>Incident ID</td><td>${user.incidentId || '-'}</td></tr>
-                            <tr><td>Subject</td><td>${user.subject || '-'}</td></tr>
-                            <tr><td>Reference ID</td><td>${user.referenceId || '-'}</td></tr>
-                            <tr><td>Status</td><td>${user.status || '-'}</td></tr>
-                            <tr><td>Reason</td><td>${user.reason || '-'}</td></tr>
-                            <tr><td>Category</td><td>${user.category || '-'}</td></tr>
+                            <tr><th>First Name</th><td>${user.firstName || '-'}</td></tr>
+                            <tr><th>Last Name</th><td>${user.lastName || '-'}</td></tr>
+                            <tr><th>Email</th><td>${user.email}</td></tr>
+                            <tr><th>Phone</th><td>${user.phone}</td></tr>
+                            <tr><th>Incident ID</th><td>${user.incidentId || '-'}</td></tr>
+                            <tr><th>Subject</th><td>${user.subject || '-'}</td></tr>
+                            <tr><th>Reference ID</th><td>${user.referenceId || '-'}</td></tr>
+                            <tr><th>Status</th><td>${user.status || '-'}</td></tr>
+                            <tr><th>Reason</th><td>${user.reason || '-'}</td></tr>
+                            <tr><th>Category</th><td>${user.category || '-'}</td></tr>
                         </table>
                     `;
                 } else {
-                    resultDiv.innerHTML = "<div class='not-found'>User not found.</div>";
+                    resultDiv.innerHTML = "<span style='color:red;'>User not found.</span>";
                 }
             })
             .catch(error => {
-                resultDiv.innerHTML = "<div class='not-found'>Error contacting the server.</div>";
+                resultDiv.innerHTML = "<span style='color:red;'>Error contacting the server.</span>";
                 console.error('API error:', error);
             });
         }
