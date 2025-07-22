@@ -5,7 +5,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f2f6fc; /* solid background */
+            background-color: #f2f6fc;
             color: #333;
             padding: 40px;
             text-align: center;
@@ -44,7 +44,8 @@
             background: #ffffff;
             border-radius: 8px;
             padding: 20px;
-            width: 600px;
+            width: 90%;
+            max-width: 900px;
             margin-left: auto;
             margin-right: auto;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
@@ -54,6 +55,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 40px;
         }
 
         th, td {
@@ -65,11 +67,17 @@
         th {
             background-color: #3498db;
             color: white;
-            width: 30%;
         }
 
         td {
             background-color: #ecf0f1;
+        }
+
+        .record-header {
+            font-weight: bold;
+            font-size: 18px;
+            margin: 20px 0 10px;
+            color: #2c3e50;
         }
     </style>
 </head>
@@ -104,24 +112,30 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.status === 'success') {
-                    const user = data.data;
-                    resultDiv.innerHTML = `
-                        <table>
-                            <tr><th>First Name</th><td>${user.firstName || '-'}</td></tr>
-                            <tr><th>Last Name</th><td>${user.lastName || '-'}</td></tr>
-                            <tr><th>Email</th><td>${user.email}</td></tr>
-                            <tr><th>Phone</th><td>${user.phone}</td></tr>
-                            <tr><th>Incident ID</th><td>${user.incidentId || '-'}</td></tr>
-                            <tr><th>Subject</th><td>${user.subject || '-'}</td></tr>
-                            <tr><th>Reference ID</th><td>${user.referenceId || '-'}</td></tr>
-                            <tr><th>Status</th><td>${user.status || '-'}</td></tr>
-                            <tr><th>Reason</th><td>${user.reason || '-'}</td></tr>
-                            <tr><th>Category</th><td>${user.category || '-'}</td></tr>
-                        </table>
-                    `;
+                if (data.status === 'success' && Array.isArray(data.data) && data.data.length > 0) {
+                    let html = '';
+
+                    data.data.forEach((user, index) => {
+                        html += `
+                            <div class="record-header">Record ${index + 1}</div>
+                            <table>
+                                <tr><th>First Name</th><td>${user.firstName || '-'}</td></tr>
+                                <tr><th>Last Name</th><td>${user.lastName || '-'}</td></tr>
+                                <tr><th>Email</th><td>${user.email || '-'}</td></tr>
+                                <tr><th>Phone</th><td>${user.phone || '-'}</td></tr>
+                                <tr><th>Incident ID</th><td>${user.incidentId || '-'}</td></tr>
+                                <tr><th>Subject</th><td>${user.subject || '-'}</td></tr>
+                                <tr><th>Reference ID</th><td>${user.referenceId || '-'}</td></tr>
+                                <tr><th>Status</th><td>${user.status || '-'}</td></tr>
+                                <tr><th>Reason</th><td>${user.reason || '-'}</td></tr>
+                                <tr><th>Category</th><td>${user.category || '-'}</td></tr>
+                            </table>
+                        `;
+                    });
+
+                    resultDiv.innerHTML = html;
                 } else {
-                    resultDiv.innerHTML = "<span style='color:red;'>User not found.</span>";
+                    resultDiv.innerHTML = "<span style='color:red;'>No records found.</span>";
                 }
             })
             .catch(error => {
