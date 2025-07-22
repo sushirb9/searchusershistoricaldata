@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search User</title>
+</head>
+<body>
+    <h2>Search by Email or Phone</h2>
+    <input type="text" id="searchValue" placeholder="Enter Email or Phone" style="width: 300px;">
+    <br><br>
+    <button onclick="search('email')">Search by Email</button>
+    <button onclick="search('phone')">Search by Phone</button>
+    <br><br>
+    <div id="result" style="margin-top:20px; border-top:1px solid #ccc; padding-top:10px;"></div>
+
+    <script>
+        const apiUrl = 'https://jlquaspst9.execute-api.ap-southeast-2.amazonaws.com/Dev/search';
+
+        function search(type) {
+            const value = document.getElementById('searchValue').value.trim();
+            const resultDiv = document.getElementById('result');
+
+            if (!value) {
+                resultDiv.innerHTML = "<span style='color:red;'>Please enter a value.</span>";
+                return;
+            }
+
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type, value })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const user = data.data;
+                    resultDiv.innerHTML = `
+                        <strong>First Name:</strong> ${user.firstName || '-'}<br>
+                        <strong>Last Name:</strong> ${user.lastName || '-'}<br>
+                        <strong>Email:</strong> ${user.email}<br>
+                        <strong>Phone:</strong> ${user.phone}<br>
+                        <strong>Incident ID:</strong> ${user.incidentId || '-'}<br>
+                        <strong>Subject:</strong> ${user.subject || '-'}<br>
+                        <strong>Reference ID:</strong> ${user.referenceId || '-'}<br>
+                        <strong>Status:</strong> ${user.status || '-'}<br>
+                        <strong>Reason:</strong> ${user.reason || '-'}<br>
+                        <strong>Category:</strong> ${user.category || '-'}
+                    `;
+                } else {
+                    resultDiv.innerHTML = "<span style='color:red;'>User not found.</span>";
+                }
+            })
+            .catch(error => {
+                resultDiv.innerHTML = "<span style='color:red;'>Error contacting the server.</span>";
+                console.error('API error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
