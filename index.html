@@ -2,15 +2,74 @@
 <html>
 <head>
     <title>Search User</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #74ebd5, #acb6e5);
+            color: #333;
+            padding: 40px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #2c3e50;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            background-color: #3498db;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #result {
+            margin-top: 30px;
+            background: #ffffffdd;
+            border-radius: 8px;
+            padding: 20px;
+            width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+
+        strong {
+            color: #2c3e50;
+        }
+
+        span {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <h2>Search by Email or Phone</h2>
-    <input type="text" id="searchValue" placeholder="Enter Email or Phone" style="width: 300px;">
+
+    <h2>Search User by Email or Phone</h2>
+
+    <input type="text" id="searchValue" placeholder="Enter Email or Phone">
     <br><br>
     <button onclick="search('email')">Search by Email</button>
     <button onclick="search('phone')">Search by Phone</button>
-    <br><br>
-    <div id="result" style="margin-top:20px; border-top:1px solid #ccc; padding-top:10px;"></div>
+
+    <div id="result"></div>
 
     <script>
         const apiUrl = 'https://jlquaspst9.execute-api.ap-southeast-2.amazonaws.com/Dev/search';
@@ -34,16 +93,16 @@
                 if (data.status === 'success') {
                     const user = data.data;
                     resultDiv.innerHTML = `
-                        <strong>First Name:</strong> ${user.firstName || '-'}<br>
-                        <strong>Last Name:</strong> ${user.lastName || '-'}<br>
-                        <strong>Email:</strong> ${user.email}<br>
-                        <strong>Phone:</strong> ${user.phone}<br>
-                        <strong>Incident ID:</strong> ${user.incidentId || '-'}<br>
-                        <strong>Subject:</strong> ${user.subject || '-'}<br>
-                        <strong>Reference ID:</strong> ${user.referenceId || '-'}<br>
-                        <strong>Status:</strong> ${user.status || '-'}<br>
-                        <strong>Reason:</strong> ${user.reason || '-'}<br>
-                        <strong>Category:</strong> ${user.category || '-'}
+                        <p><strong>First Name:</strong> ${user.firstName || '-'}</p>
+                        <p><strong>Last Name:</strong> ${user.lastName || '-'}</p>
+                        <p><strong>Email:</strong> ${user.email}</p>
+                        <p><strong>Phone:</strong> ${user.phone}</p>
+                        <p><strong>Incident ID:</strong> ${user.incidentId || '-'}</p>
+                        <p><strong>Subject:</strong> ${user.subject || '-'}</p>
+                        <p><strong>Reference ID:</strong> ${user.referenceId || '-'}</p>
+                        <p><strong>Status:</strong> ${user.status || '-'}</p>
+                        <p><strong>Reason:</strong> ${user.reason || '-'}</p>
+                        <p><strong>Category:</strong> ${user.category || '-'}</p>
                     `;
                 } else {
                     resultDiv.innerHTML = "<span style='color:red;'>User not found.</span>";
