@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Search User</title>
+    <title>Incident Search</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -10,35 +10,25 @@
             padding: 40px;
             text-align: center;
         }
-
-        h2 {
-            color: #2c3e50;
-        }
-
+        h2 { color: #2c3e50; }
         input[type="text"] {
             padding: 10px;
-            width: 300px;
+            width: 350px;
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 16px;
         }
-
         button {
             padding: 10px 20px;
             margin: 10px 5px;
-            font-size: 16px;
+            font-size: 14px;
             border: none;
             border-radius: 4px;
             color: white;
             cursor: pointer;
             background-color: #3498db;
-            transition: background-color 0.3s ease;
         }
-
-        button:hover {
-            background-color: #2980b9;
-        }
-
+        button:hover { background-color: #2980b9; }
         #result {
             margin-top: 30px;
             background: #ffffff;
@@ -52,47 +42,50 @@
             text-align: left;
             overflow-x: auto;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 14px;
+            margin-top: 15px;
         }
-
         th, td {
             padding: 10px;
             border: 1px solid #2c3e50;
             text-align: left;
         }
-
         th {
             background-color: #3498db;
             color: white;
         }
-
         td {
             background-color: #ecf0f1;
         }
-
-        .error {
-            color: red;
-            font-weight: bold;
-        }
+        .error { color: red; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h2>Search User by Email Address or Phone</h2>
+    <h2>Search Incident Records</h2>
 
-    <input type="text" id="searchValue" placeholder="Enter Email or Phone">
+    <input type="text" id="searchValue" placeholder="Enter First Name, Last Name, Email, Phone or Incident ID">
     <br><br>
+    <button onclick="search('firstName')">Search by First Name</button>
+    <button onclick="search('lastName')">Search by Last Name</button>
     <button onclick="search('email')">Search by Email</button>
     <button onclick="search('phone')">Search by Phone</button>
+    <button onclick="search('incidentId')">Search by Incident ID</button>
 
     <div id="result"></div>
 
     <script>
         const apiUrl = 'https://jlquaspst9.execute-api.ap-southeast-2.amazonaws.com/Dev/search';
+
+        function getFileType(file) {
+            if (file.endsWith(".pdf")) return "PDF";
+            if (file.endsWith(".txt")) return "Text";
+            if (file.match(/\.(jpg|jpeg|png|gif)$/i)) return "Image";
+            return "File";
+        }
 
         function search(type) {
             const value = document.getElementById('searchValue').value.trim();
@@ -114,44 +107,65 @@
                 if (data.status === 'success' && Array.isArray(data.data) && data.data.length > 0) {
                     const users = data.data;
 
-                    let html = `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>First Name</th>
-                                    <th>Last Name</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Incident ID</th>
-                                    <th>Subject</th>
-                                    <th>Reference ID</th>
-                                    <th>Status</th>
-                                    <th>Reason</th>
-                                    <th>Category</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
-
                     users.forEach(user => {
-                        html += `
-                            <tr>
-                                <td>${user.firstName || '-'}</td>
-                                <td>${user.lastName || '-'}</td>
-                                <td>${user.email || '-'}</td>
-                                <td>${user.phone || '-'}</td>
-                                <td>${user.incidentId || '-'}</td>
-                                <td>${user.subject || '-'}</td>
-                                <td>${user.referenceId || '-'}</td>
-                                <td>${user.status || '-'}</td>
-                                <td>${user.reason || '-'}</td>
-                                <td>${user.category || '-'}</td>
-                            </tr>
+                        let html = `
+                            <h3>Incident ID: ${user.incidentId || '-'} | Customer: ${user.firstName || ''} ${user.lastName || ''}</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Email</th><th>Phone</th><th>Subject</th>
+                                        <th>Reference ID</th><th>Status</th><th>Reason</th><th>Category</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>${user.email || '-'}</td>
+                                        <td>${user.phone || '-'}</td>
+                                        <td>${user.subject || '-'}</td>
+                                        <td>${user.referenceId || '-'}</td>
+                                        <td>${user.status || '-'}</td>
+                                        <td>${user.reason || '-'}</td>
+                                        <td>${user.category || '-'}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         `;
+
+                        if (user.attachments && user.attachments.length > 0) {
+                            html += `
+                                <h4>📎 Attachments:</h4>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Filename</th><th>Type</th><th>Size</th><th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                            `;
+                            user.attachments.forEach(filePath => {
+                                const fileName = filePath.split('/').pop();
+                                const fileType = getFileType(fileName);
+                                const size = "-"; // you can calculate size from API if available
+
+                                let actions = `<a href="${filePath}" target="_blank">🔍 View</a> | <a href="${filePath}" download>⬇ Download</a>`;
+                                if (fileType === "Image") {
+                                    actions = `<a href="${filePath}" target="_blank">🖼 Preview</a> | <a href="${filePath}" download>⬇ Download</a>`;
+                                }
+
+                                html += `
+                                    <tr>
+                                        <td>${fileName}</td>
+                                        <td>${fileType}</td>
+                                        <td>${size}</td>
+                                        <td>${actions}</td>
+                                    </tr>
+                                `;
+                            });
+                            html += "</tbody></table>";
+                        }
+                        resultDiv.innerHTML += html + "<hr>";
                     });
 
-                    html += `</tbody></table>`;
-                    resultDiv.innerHTML = html;
                 } else {
                     resultDiv.innerHTML = "<div class='error'>No records found.</div>";
                 }
